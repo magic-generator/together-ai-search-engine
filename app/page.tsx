@@ -1,6 +1,8 @@
 "use client";
 import { ChatCompletionStream } from "openai/resources/beta/chat/completions.mjs";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // app/page.tsx
 function Page() {
@@ -28,16 +30,6 @@ function Page() {
     runner.on("content", (delta: any) =>
       setAnswer((prev: any) => prev + delta)
     );
-    // const answerResponse = await fetch("/api/getAnswer", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ question, sources }),
-    // });
-
-    // let answer = await answerResponse.json();
-    // setAnswer(answer);
   }
   return (
     <form onSubmit={handleSubmit}>
@@ -45,11 +37,12 @@ function Page() {
         value={question}
         onChange={(e) => setQuestion(e.target.value)}
         placeholder="Can you explain the theory of relativity?"
+        className="justify-center p-2 w-[99%] border border-gray-300 rounded-md m-2"
       />
 
       {sources.length > 0 && (
         <div>
-          <p>Sources</p>
+          <h2 className="text-lg font-bold">Sources</h2>
           <ul>
             {sources.map((source: any) => (
               <li key={source.url}>
@@ -60,7 +53,16 @@ function Page() {
           </ul>
         </div>
       )}
-      {answer && <p>{answer}</p>}
+      {answer && (
+        <div>
+          <h2 className="text-lg font-bold">Answer</h2>
+          <div className="markdown-content prose">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {answer}
+            </ReactMarkdown>
+          </div>
+        </div>
+      )}
     </form>
   );
 }
